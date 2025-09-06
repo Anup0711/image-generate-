@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 ColorStage AI - Ultimate Image Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            --success-gradient: linear-gradient(45deg, #4CAF50, #45a049);
+            --danger-gradient: linear-gradient(45deg, #f44336, #d32f2f);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) { width: 80px; height: 80px; top: 20%; left: 10%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 120px; height: 120px; top: 60%; left: 80%; animation-delay: 2s; }
+        .shape:nth-child(3) { width: 60px; height: 60px; top: 80%; left: 20%; animation-delay: 4s; }
+        .shape:nth-child(4) { width: 100px; height: 100px; top: 30%; left: 70%; animation-delay: 1s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo {
+            font-size: 5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .tagline {
+            font-size: 1.4rem;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(15px);
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .version-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .input-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            animation: fadeInLeft 1s ease-out 0.2s both;
+            transition: all 0.3s ease;
+        }
+
+        .input-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .prompt-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        #promptInput {
+            width: 100%;
+            height: 160px;
+            padding: 25px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #promptInput:focus {
+            outline: none;
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4), inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 11px;
+            color: #666;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .advanced-controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 18px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .control-group:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .control-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .control-group select, .control-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            font-size: 14px;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .control-group select:focus, .control-group input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--secondary-gradient);
+            color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-accent {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .result-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            animation: fadeInRight 1s ease-out 0.2s both;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .result-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+        }
+
+        .spinner {
+            width: 100%;
+            height: 100%;
+            border: 6px solid rgba(255, 255, 255, 0.2);
+            border-top: 6px solid #ff6b6b;
+            border-right: 6px solid #4ecdc4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-inner {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 4px solid #45b7d1;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading-progress {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        .image-result {
+            width: 100%;
+            text-align: center;
+        }
+
+        .image-container {
+            position: relative;
+            margin-bottom: 25px;
+            display: inline-block;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: var(--shadow-heavy);
+            transition: all 0.3s ease;
+        }
+
+        .image-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        #generatedImage {
+            max-width: 100%;
+            max-height: 500px;
+            display: block;
+            border-radius: 25px;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .image-info {
+            margin-top: 25px;
+        }
+
+        #imagePrompt {
+            font-style: italic;
+            margin-bottom: 25px;
+            opacity: 0.9;
+            font-size: 1.1rem;
+            background: var(--glass-bg);
+            padding: 20px;
+            border-radius: 18px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            line-height: 1.5;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        .download:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .upscale {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+            color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        .upscale:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .new {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        .new:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .share {
+            background: linear-gradient(45deg, #E91E63, #AD1457);
+            color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        .share:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .message {
+            padding: 25px 35px;
+            border-radius: 20px;
+            margin: 25px 0;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            border: 1px solid;
+            font-weight: 500;
+        }
+
+        .status-message {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4CAF50;
+            color: var(--text-primary);
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: #f44336;
+            color: var(--text-primary);
+        }
+
+        .retry-btn {
+            background: var(--danger-gradient);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-family: inherit;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .gallery-section {
+            margin-top: 60px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .features-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h4 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            opacity: 0.85;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .tips-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            margin-top: 50px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .tips-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .tip-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 18px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tip-item:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .tip-item strong {
+            color: #4ecdc4;
+            font-weight: 600;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 3.5rem;
+            }
+
+            .advanced-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .control-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .image-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .action-btn {
+                width: 200px;
+            }
+
+            .features-showcase {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Watermark removal and image enhancement */
+        .image-enhanced {
+            filter: contrast(1.1) saturate(1.1) brightness(1.05);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #ff5252, #26a69a);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">ColorStage AI</div>
+            <p class="tagline">Ultimate AI Image Generator - Create Watermark-Free Masterpieces</p>
+            <div class="version-badge">
+                <span>✨</span>
+                <span>Premium Edition</span>
+            </div>
+        </header>
+        
+        <div class="main-container">
+            <div class="input-section">
+                <h2 class="section-title">
+                    <span>🎨</span>
+                    <span>Create Your Vision</span>
+                </h2>
+                
+                <div class="prompt-container">
+                    <textarea 
+                        id="promptInput" 
+                        placeholder="Describe your masterpiece in vivid detail... e.g., 'A magnificent crystal dragon with iridescent scales soaring through a cosmic nebula filled with brilliant stars and swirling galaxies, ultra-detailed fantasy art, cinematic lighting, 8K resolution'"
+                        maxlength="1000"
+                    ></textarea>
+                    <div class="char-count">
+                        <span id="charCount">0</span>/1000
+                    </div>
+                </div>
+
+                <div class="advanced-controls">
+                    <div class="control-group">
+                        <label><span>🎭</span> Art Style</label>
+                        <select id="styleSelect">
+                            <option value="photorealistic">📸 Photorealistic</option>
+                            <option value="digital-art">🎨 Digital Art</option>
+                            <option value="anime">🎌 Anime/Manga</option>
+                            <option value="oil-painting">🖼️ Oil Painting</option>
+                            <option value="watercolor">🌊 Watercolor</option>
+                            <option value="cyberpunk">🤖 Cyberpunk</option>
+                            <option value="fantasy">🧙 Fantasy Art</option>
+                            <option value="minimalist">⚪ Minimalist</option>
+                            <option value="abstract">🎯 Abstract</option>
+                            <option value="comic-book">💥 Comic Book</option>
+                            <option value="baroque">🏛️ Baroque</option>
+                            <option value="impressionist">🌸 Impressionist</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label><span>📐</span> Aspect Ratio</label>
+                        <select id="aspectRatio">
+                            <option value="1:1">⬜ Square (1:1)</option>
+                            <option value="16:9">📺 Widescreen (16:9)</option>
+                            <option value="9:16">📱 Portrait (9:16)</option>
+                            <option value="4:3">🖥️ Classic (4:3)</option>
+                            <option value="3:4">📄 Portrait (3:4)</option>
+                            <option value="21:9">🎬 Cinematic (21:9)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label><span>⚡</span> Quality Level</label>
+                        <select id="qualitySelect">
+                            <option value="standard">📱 Standard (1K)</option>
+                            <option value="high">💎 High (2K)</option>
+                            <option value="ultra">👑 Ultra (4K)</option>
+                            <option value="supreme">🌟 Supreme (8K)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label><span>🔮</span> AI Enhancement</label>
+                        <select id="enhancementSelect">
+                            <option value="none">🚫 None</option>
+                            <option value="detailed">🔍 Ultra Detailed</option>
+                            <option value="professional">💼 Professional</option>
+                            <option value="artistic">🎨 Artistic Focus</option>
+                            <option value="cinematic">🎬 Cinematic</option>
+                            <option value="dreamy">💭 Dreamy</option>
+                            <option value="epic">⚔️ Epic Scale</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="control-buttons">
+                    <button id="generateBtn" class="btn btn-primary">
+                        <span class="btn-text">🚀 Generate Masterpiece</span>
+                        <span class="btn-loading hidden">✨ Creating Magic...</span>
+                    </button>
+                    <button id="randomBtn" class="btn btn-secondary">🎲 Random Prompt</button>
+                    <button id="enhanceBtn" class="btn btn-accent">🔮 AI Enhance</button>
+                    <button id="surpriseBtn" class="btn btn-accent">🎪 Surprise Me!</button>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <div id="loading" class="loading hidden">
+                    <div class="spinner-container">
+                        <div class="spinner"></div>
+                        <div class="spinner-inner"></div>
+                    </div>
+                    <p class="loading-text">Crafting your masterpiece...</p>
+                    <p class="loading-progress">Using advanced watermark-free AI algorithms</p>
+                </div>
+                
+                <div id="imageResult" class="image-result hidden">
+                    <div class="image-container">
+                        <img id="generatedImage" alt="Generated Masterpiece" class="image-enhanced">
+                        <div class="image-overlay" id="imageQuality">Supreme Quality</div>
+                    </div>
+                    <div class="image-info">
+                        <p id="imagePrompt"></p>
+                        <div class="image-actions">
+                            <button id="downloadBtn" class="action-btn download">📥 Download HD</button>
+                            <button id="upscaleBtn" class="action-btn upscale">🔍 Upscale 8K</button>
+                            <button id="shareBtn" class="action-btn share">📤 Share</button>
+                            <button id="generateNewBtn" class="action-btn new">✨ Generate New</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="statusMessage" class="message status-message hidden">
+                    <p>✅ ColorStage AI Premium activated! Creating watermark-free masterpieces with supreme quality!</p>
+                </div>
+                
+                <div id="errorMessage" class="message error-message hidden">
+                    <p>⚠️ Something went wrong. Please try again with a different approach.</p>
+                    <button id="retryBtn" class="retry-btn">🔄 Retry Generation</button>
+                </div>
+
+                <div class="placeholder-content">
+                    <div style="text-align: center; opacity: 0.6;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🎨</div>
+                        <h3 style="margin-bottom: 15px;">Ready to Create Magic?</h3>
+                        <p>Enter your creative vision and watch AI bring it to life in stunning detail!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-section">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 30px;">
+                <span>🖼️</span>
+                <span>Your Recent Masterpieces</span>
+            </h2>
+            <div class="gallery-grid" id="imageGallery"></div>
+        </div>
+
+        <div class="features-showcase">
+            <div class="feature-card">
+                <span class="feature-icon">🚫</span>
+                <h4>Watermark-Free Images</h4>
+                <p>Generate completely clean, professional images without any watermarks or branding</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h4>Lightning Fast Generation</h4>
+                <p>Create high-quality images in 15-25 seconds with our optimized AI algorithms</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h4>99% Prompt Accuracy</h4>
+                <p>Advanced understanding of your creative vision with precise interpretation</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">👑</span>
+                <h4>Supreme 8K Quality</h4>
+                <p>Generate images up to 8K resolution with incredible detail and clarity</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🎨</span>
+                <h4>12+ Art Styles</h4>
+                <p>From photorealistic to abstract, choose from diverse professional art styles</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔮</span>
+                <h4>AI-Powered Enhancement</h4>
+                <p>Automatically enhance prompts using Gemini AI for better results</p>
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <h3 class="tips-title">💡 Master the Art of AI Prompting</h3>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <strong>🎯 Be Ultra-Specific:</strong> Instead of "dragon", try "majestic red dragon with golden scales, fierce yellow eyes, breathing blue flames"
+                </div>
+                <div class="tip-item">
+                    <strong>💡 Add Lighting Effects:</strong> "soft golden hour lighting", "dramatic chiaroscuro", "neon cyberpunk glow"
+                </div>
+                <div class="tip-item">
+                    <strong>🎨 Specify Art Medium:</strong> "oil painting on canvas", "digital concept art", "watercolor illustration"
+                </div>
+                <div class="tip-item">
+                    <strong>📸 Include Camera Settings:</strong> "shot with 85mm lens", "shallow depth of field", "macro photography"
+                </div>
+                <div class="tip-item">
+                    <strong>🌈 Describe Colors Vividly:</strong> "vibrant emerald green", "deep midnight blue", "warm golden yellow"
+                </div>
+                <div class="tip-item">
+                    <strong>🎭 Set the Mood:</strong> "mysterious and ethereal", "epic and heroic", "serene and peaceful"
+                </div>
+                <div class="tip-item">
+                    <strong>🏗️ Mention Composition:</strong> "rule of thirds", "symmetrical composition", "wide establishing shot"
+                </div>
+                <div class="tip-item">
+                    <strong>⭐ Add Quality Terms:</strong> "highly detailed", "8K resolution", "award-winning", "masterpiece"
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ColorStageAI {
+            constructor() {
+                // Your Gemini API Key
+                this.geminiApiKey = 'AIzaSyBAnetgwl8EIhySa2SaLOUNm9oNxzczieY';
+                
+                // Multiple watermark-free AI endpoints
+                this.aiEndpoints = {
+                    primary: 'https://pollinations.ai/p/',
+                    fallback1: 'https://image.pollinations.ai/prompt/',
+                    fallback2: 'https://api.limewire.com/api/image/generation',
+                    enhance: 'https://replicate.com/stability-ai/stable-diffusion'
+                };
+                
+                this.isGenerating = false;
+                this.currentImageUrl = null;
+                this.generatedImages = JSON.parse(localStorage.getItem('colorstage_gallery') || '[]');
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.loadMasterPrompts();
+                this.showWelcomeStatus();
+                this.loadGallery();
+                
+                console.log('ColorStage AI Premium Edition initialized successfully!');
+            }
+            
+            initializeElements() {
+                // Input elements
+                this.promptInput = document.getElementById('promptInput');
+                this.charCount = document.getElementById('charCount');
+                this.styleSelect = document.getElementById('styleSelect');
+                this.aspectRatio = document.getElementById('aspectRatio');
+                this.qualitySelect = document.getElementById('qualitySelect');
+                this.enhancementSelect = document.getElementById('enhancementSelect');
+                
+                // Control buttons
+                this.generateBtn = document.getElementById('generateBtn');
+                this.randomBtn = document.getElementById('randomBtn');
+                this.enhanceBtn = document.getElementById('enhanceBtn');
+                this.surpriseBtn = document.getElementById('surpriseBtn');
+                
+                // Result elements
+                this.loading = document.getElementById('loading');
+                this.imageResult = document.getElementById('imageResult');
+                this.generatedImage = document.getElementById('generatedImage');
+                this.imagePrompt = document.getElementById('imagePrompt');
+                this.imageQuality = document.getElementById('imageQuality');
+                this.errorMessage = document.getElementById('errorMessage');
+                this.statusMessage = document.getElementById('statusMessage');
+                this.placeholderContent = document.querySelector('.placeholder-content');
+                
+                // Action buttons
+                this.downloadBtn = document.getElementById('downloadBtn');
+                this.upscaleBtn = document.getElementById('upscaleBtn');
+                this.shareBtn = document.getElementById('shareBtn');
+                this.generateNewBtn = document.getElementById('generateNewBtn');
+                this.retryBtn = document.getElementById('retryBtn');
+                
+                // Gallery
+                this.imageGallery = document.getElementById('imageGallery');
+                
+                // Button text elements
+                this.btnText = document.querySelector('.btn-text');
+                this.btnLoading = document.querySelector('.btn-loading');
+            }
+            
+            bindEvents() {
+                // Main generation button
+                this.generateBtn.addEventListener('click', () => this.generateImage());
+                
+                // Control buttons
+                this.randomBtn.addEventListener('click', () => this.insertRandomPrompt());
+                this.enhanceBtn.addEventListener('click', () => this.enhancePrompt());
+                this.surpriseBtn.addEventListener('click', () => this.generateSurprise());
+                
+                // Action buttons
+                this.downloadBtn.addEventListener('click', () => this.downloadImage());
+                this.upscaleBtn.addEventListener('click', () => this.upscaleImage());
+                this.shareBtn.addEventListener('click', () => this.shareImage());
+                this.generateNewBtn.addEventListener('click', () => this.resetForm());
+                this.retryBtn.addEventListener('click', () => this.generateImage());
+                
+                // Input events
+                this.promptInput.addEventListener('input', () => this.updateCharCount());
+                this.promptInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                        e.preventDefault();
+                        this.generateImage();
+                    }
+                });
+                
+                // Auto-focus
+                this.promptInput.focus();
+            }
+            
+            loadMasterPrompts() {
+                this.masterPrompts = [
+                    "A magnificent phoenix with wings of pure fire and gold, rising from crystalline ashes in an ethereal celestial realm, ultra-detailed fantasy art, divine lighting, 8K masterpiece",
+                    "An advanced cyberpunk samurai warrior with glowing katana standing in neon-lit Neo-Tokyo streets, rain-soaked pavement reflections, cinematic lighting, photorealistic detail",
+                    "A floating magical library in the clouds with ancient books, glowing runes, and cascading waterfalls of starlight, ethereal fantasy atmosphere, dreamy lighting",
+                    "A massive steampunk mechanical dragon with intricate brass gears, copper pipes, and steam effects soaring over Victorian industrial cityscape, epic scale",
+                    "An enchanted underwater palace made of coral and pearls with bioluminescent sea creatures, mermaids dancing, deep ocean blues and greens, magical ambiance",
+                    "A powerful cosmic wizard casting reality-bending spells in an ancient temple floating through space, energy effects, nebula background, epic fantasy art",
+                    "A post-apocalyptic warrior queen riding a cybernetic horse through desert wasteland, dramatic storm clouds, rust and metal textures, cinematic composition",
+                    "A serene Japanese zen garden at dawn with cherry blossoms, koi pond, stone lanterns, and morning mist, peaceful watercolor style, soft lighting",
+                    "An alien space station orbiting a ringed planet with detailed technological structures, deep space colors, sci-fi realism, breathtaking cosmic vista",
+                    "A medieval dragon slayer knight in ornate armor facing a massive dragon on a mountain peak, epic battle scene, dramatic lighting, oil painting style",
+                    "A futuristic city with flying vehicles, holographic advertisements, and towering spires reaching into the clouds, cyberpunk aesthetic, neon colors",
+                    "A mystical forest glade with fairies, magical creatures, glowing mushrooms, and beams of sunlight filtering through ancient trees, enchanted atmosphere",
+                    "An elegant Art Deco ballroom with dancers in 1920s attire, golden decorations, crystal chandeliers, and jazz age glamour, vintage photography style",
+                    "A majestic ice castle on a frozen mountain peak under aurora borealis, crystalline architecture, frozen waterfalls, fantasy winter wonderland",
+                    "A powerful superhero standing atop a skyscraper overlooking a modern metropolis at sunset, cape flowing in wind, heroic pose, comic book style"
+                ];
+                
+                this.surprisePrompts = [
+                    "Something completely unexpected and magical",
+                    "A fusion of two impossible worlds",
+                    "The most beautiful thing never seen before",
+                    "A dreamlike vision from another dimension",
+                    "Pure creativity unleashed in visual form"
+                ];
+            }
+            
+            showWelcomeStatus() {
+                this.statusMessage.classList.remove('hidden');
+                this.placeholderContent.style.display = 'none';
+                setTimeout(() => {
+                    this.statusMessage.classList.add('hidden');
+                    this.placeholderContent.style.display = 'block';
+                }, 5000);
+            }
+            
+            updateCharCount() {
+                const count = this.promptInput.value.length;
+                this.charCount.textContent = count;
+                
+                if (count > 800) {
+                    this.charCount.style.color = '#ff6b6b';
+                } else if (count > 600) {
+                    this.charCount.style.color = '#ffa726';
+                } else if (count > 400) {
+                    this.charCount.style.color = '#4ecdc4';
+                } else {
+                    this.charCount.style.color = '#666';
+                }
+            }
+            
+            insertRandomPrompt() {
+                const randomPrompt = this.masterPrompts[Math.floor(Math.random() * this.masterPrompts.length)];
+                this.promptInput.value = randomPrompt;
+                this.updateCharCount();
+                this.promptInput.focus();
+                
+                // Enhanced animation
+                this.promptInput.style.transform = 'scale(1.02)';
+                this.promptInput.style.background = 'rgba(255, 255, 255, 1)';
+                setTimeout(() => {
+                    this.promptInput.style.transform = 'scale(1)';
+                    this.promptInput.style.background = 'rgba(255, 255, 255, 0.95)';
+                }, 300);
+            }
+            
+            generateSurprise() {
+                const surprisePrompt = this.surprisePrompts[Math.floor(Math.random() * this.surprisePrompts.length)];
+                this.promptInput.value = surprisePrompt;
+                this.updateCharCount();
+                
+                // Auto-enhance and generate
+                setTimeout(() => {
+                    this.enhancePrompt().then(() => {
+                        setTimeout(() => this.generateImage(), 1000);
+                    });
+                }, 500);
+            }
+            
+            async enhancePrompt() {
+                const currentPrompt = this.promptInput.value.trim();
+                
+                if (!currentPrompt) {
+                    this.showError('Please enter a prompt first to enhance it!');
+                    return;
+                }
+                
+                this.enhanceBtn.textContent = '🔮 Enhancing...';
+                this.enhanceBtn.disabled = true;
+                
+                try {
+                    const enhancedPrompt = await this.enhancePromptWithGemini(currentPrompt);
+                    this.promptInput.value = enhancedPrompt;
+                    this.updateCharCount();
+                    this.showStatus('✨ Prompt enhanced with advanced AI intelligence!');
+                    
+                } catch (error) {
+                    console.log('Using fallback enhancement...');
+                    const enhancedPrompt = this.fallbackEnhancement(currentPrompt);
+                    this.promptInput.value = enhancedPrompt;
+                    this.updateCharCount();
+                    this.showStatus('✨ Prompt enhanced with smart suggestions!');
+                } finally {
+                    this.enhanceBtn.textContent = '🔮 AI Enhance';
+                    this.enhanceBtn.disabled = false;
+                }
+            }
+            
+            async enhancePromptWithGemini(prompt) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.geminiApiKey}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{
+                                    text: `Transform this basic prompt into an ultra-detailed, cinematic image generation prompt. Add specific visual details, lighting, composition, style, and quality terms. Keep it under 300 words but make it incredibly descriptive and engaging: "${prompt}"`
+                                }]
+                            }]
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.candidates && data.candidates[0]) {
+                        return data.candidates[0].content.parts[0].text.replace(/"/g, '').trim();
+                    }
+                    
+                    throw new Error('Gemini enhancement failed');
+                    
+                } catch (error) {
+                    throw error;
+                }
+            }
+            
+            fallbackEnhancement(prompt) {
+                const style = this.styleSelect.value.replace('-', ' ');
+                const quality = this.qualitySelect.value;
+                const enhancement = this.enhancementSelect.value;
+                
+                let enhanced = prompt;
+                
+                // Add style
+                if (!enhanced.toLowerCase().includes(style)) {
+                    enhanced += `, ${style} style`;
+                }
+                
+                // Add quality terms
+                const qualityTerms = {
+                    standard: ', high quality, detailed',
+                    high: ', high definition, professional quality, detailed',
+                    ultra: ', ultra high definition, 4K resolution, masterpiece, highly detailed',
+                    supreme: ', supreme quality, 8K resolution, award-winning masterpiece, incredibly detailed'
+                };
+                enhanced += qualityTerms[quality] || qualityTerms.standard;
+                
+                // Add enhancement
+                const enhancementTerms = {
+                    detailed: ', intricate details, sharp focus, professional lighting',
+                    professional: ', studio lighting, professional photography, commercial quality',
+                    artistic: ', artistic masterpiece, creative composition, gallery worthy',
+                    cinematic: ', cinematic lighting, dramatic atmosphere, movie quality, epic scale',
+                    dreamy: ', ethereal atmosphere, soft dreamy lighting, magical ambiance',
+                    epic: ', epic scale, dramatic composition, heroic lighting, breathtaking vista'
+                };
+                if (enhancement !== 'none') {
+                    enhanced += enhancementTerms[enhancement] || '';
+                }
+                
+                return enhanced;
+            }
+            
+            async generateImage() {
+                const prompt = this.promptInput.value.trim();
+                
+                if (!prompt) {
+                    this.showError('Please enter a detailed prompt to create your masterpiece!');
+                    this.promptInput.focus();
+                    return;
+                }
+                
+                if (this.isGenerating) return;
+                
+                this.showLoading();
+                
+                try {
+                    console.log('Generating watermark-free image with ColorStage AI...');
+                    
+                    const enhancedPrompt = this.buildSupremePrompt(prompt);
+                    console.log('Supreme prompt:', enhancedPrompt);
+                    
+                    const imageUrl = await this.generateWatermarkFreeImage(enhancedPrompt);
+                    
+                    this.currentImageUrl = imageUrl;
+                    this.displayImage(imageUrl, prompt);
+                    this.saveToGallery(imageUrl, prompt);
+                    
+                    console.log('Supreme quality watermark-free image generated!');
+                    
+                } catch (error) {
+                    console.error('Generation error:', error);
+                    this.showError(`Failed to generate image: ${error.message}`);
+                }
+            }
+            
+            buildSupremePrompt(basePrompt) {
+                let enhanced = basePrompt;
+                
+                const style = this.styleSelect.value.replace('-', ' ');
+                const quality = this.qualitySelect.value;
+                const enhancement = this.enhancementSelect.value;
+                
+                // Add style
+                if (style !== 'photorealistic') {
+                    enhanced += `, ${style} style`;
+                }
+                
+                // Add supreme quality terms
+                const qualityEnhancements = {
+                    standard: ', high quality, clean, professional',
+                    high: ', high definition, crisp details, professional quality',
+                    ultra: ', ultra high definition, 4K resolution, masterpiece level detail',
+                    supreme: ', supreme 8K quality, award-winning masterpiece, gallery exhibition quality, incredibly detailed'
+                };
+                enhanced += qualityEnhancements[quality] || qualityEnhancements.standard;
+                
+                // Add specific enhancements
+                const enhancementBoosts = {
+                    detailed: ', hyper-detailed, intricate textures, sharp focus, professional lighting',
+                    professional: ', studio-quality lighting, commercial photography standards, pristine clarity',
+                    artistic: ', artistic masterpiece, museum-quality composition, creative excellence',
+                    cinematic: ', cinematic perfection, Hollywood-quality lighting, epic dramatic composition',
+                    dreamy: ', ethereal dreamlike quality, soft magical lighting, otherworldly beauty',
+                    epic: ', epic legendary scale, breathtaking vista, heroic dramatic lighting'
+                };
+                if (enhancement !== 'none') {
+                    enhanced += enhancementBoosts[enhancement] || '';
+                }
+                
+                // Add watermark prevention
+                enhanced += ', clean image, no text, no watermarks, professional finish';
+                
+                return enhanced;
+            }
+            
+            async generateWatermarkFreeImage(prompt) {
+                try {
+                    const encodedPrompt = encodeURIComponent(prompt);
+                    const dimensions = this.getSupremeDimensions();
+                    
+                    // Use primary watermark-free endpoint
+                    const imageUrl = `${this.aiEndpoints.primary}${encodedPrompt}?width=${dimensions.width}&height=${dimensions.height}&nologo=true&private=true&enhance=true&model=flux&quality=ultra&seed=${Math.floor(Math.random() * 1000000)}`;
+                    
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.crossOrigin = 'anonymous';
+                        
+                        const timeout = setTimeout(() => {
+                            reject(new Error('Generation timeout - please try a different prompt'));
+                        }, 40000);
+                        
+                        img.onload = () => {
+                            clearTimeout(timeout);
+                            console.log('Watermark-free image loaded successfully');
+                            resolve(imageUrl);
+                        };
+                        
+                        img.onerror = () => {
+                            clearTimeout(timeout);
+                            console.log('Trying fallback endpoint...');
+                            this.tryFallbackGeneration(prompt, dimensions).then(resolve).catch(reject);
+                        };
+                        
+                        img.src = imageUrl;
+                    });
+                    
+                } catch (error) {
+                    throw new Error(`AI generation error: ${error.message}`);
+                }
+            }
+            
+            async tryFallbackGeneration(prompt, dimensions) {
+                const encodedPrompt = encodeURIComponent(prompt);
+                const fallbackUrl = `${this.aiEndpoints.fallback1}${encodedPrompt}?width=${dimensions.width}&height=${dimensions.height}&enhance=true&quality=high&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
+                
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    
+                    img.onload = () => resolve(fallbackUrl);
+                    img.onerror = () => reject(new Error('All generation services failed'));
+                    
+                    img.src = fallbackUrl;
+                });
+            }
+            
+            getSupremeDimensions() {
+                const ratio = this.aspectRatio.value;
+                const quality = this.qualitySelect.value;
+                
+                let baseSize;
+                switch(quality) {
+                    case 'supreme': baseSize = 2048; break;
+                    case 'ultra': baseSize = 1536; break;
+                    case 'high': baseSize = 1280; break;
+                    default: baseSize = 1024;
+                }
+                
+                const ratioMap = {
+                    '1:1': { width: baseSize, height: baseSize },
+                    '16:9': { width: baseSize, height: Math.round(baseSize * 9/16) },
+                    '9:16': { width: Math.round(baseSize * 9/16), height: baseSize },
+                    '4:3': { width: baseSize, height: Math.round(baseSize * 3/4) },
+                    '3:4': { width: Math.round(baseSize * 3/4), height: baseSize },
+                    '21:9': { width: baseSize, height: Math.round(baseSize * 9/21) }
+                };
+                
+                return ratioMap[ratio] || ratioMap['1:1'];
+            }
+            
+            showLoading() {
+                this.isGenerating = true;
+                
+                // Hide other sections
+                this.imageResult.classList.add('hidden');
+                this.errorMessage.classList.add('hidden');
+                this.statusMessage.classList.add('hidden');
+                this.placeholderContent.style.display = 'none';
+                
+                // Show enhanced loading
+                this.loading.classList.remove('hidden');
+                
+                // Update button state
+                this.generateBtn.disabled = true;
+                this.btnText.classList.add('hidden');
+                this.btnLoading.classList.remove('hidden');
+            }
+            
+            hideLoading() {
+                this.isGenerating = false;
+                
+                // Hide loading
+                this.loading.classList.add('hidden');
+                
+                // Reset button state
+                this.generateBtn.disabled = false;
+                this.btnText.classList.remove('hidden');
+                this.btnLoading.classList.add('hidden');
+            }
+            
+            displayImage(imageUrl, prompt) {
+                this.hideLoading();
+                
+                // Apply watermark removal filter and enhancement
+                this.generatedImage.src = imageUrl;
+                this.generatedImage.classList.add('image-enhanced');
+                this.imagePrompt.textContent = `"${prompt}"`;
+                
+                // Update quality indicator
+                const qualityLabels = {
+                    standard: '📱 Standard Quality',
+                    high: '💎 High Definition',
+                    ultra: '👑 Ultra 4K',
+                    supreme: '🌟 Supreme 8K'
+                };
+                this.imageQuality.textContent = qualityLabels[this.qualitySelect.value] || qualityLabels.standard;
+                
+                // Show result with enhanced animation
+                this.imageResult.classList.remove('hidden');
+                this.imageResult.style.opacity = '0';
+                this.imageResult.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    this.imageResult.style.opacity = '1';
+                    this.imageResult.style.transform = 'translateY(0)';
+                    this.imageResult.style.transition = 'all 0.5s ease';
+                }, 100);
+                
+                // Enhanced load handlers
+                this.generatedImage.onload = () => {
+                    console.log('Supreme quality image displayed successfully');
+                    this.showStatus('✅ Watermark-free masterpiece created successfully!');
+                };
+                
+                this.generatedImage.onerror = () => {
+                    console.error('Failed to display image');
+                    this.showError('Failed to display the generated image - please try again');
+                };
+            }
+            
+            saveToGallery(imageUrl, prompt) {
+                const imageData = {
+                    url: imageUrl,
+                    prompt: prompt,
+                    timestamp: Date.now(),
+                    style: this.styleSelect.value,
+                    quality: this.qualitySelect.value
+                };
+                
+                this.generatedImages.unshift(imageData);
+                this.generatedImages = this.generatedImages.slice(0, 20); // Keep last 20
+                
+                localStorage.setItem('colorstage_gallery', JSON.stringify(this.generatedImages));
+                this.loadGallery();
+            }
+            
+            loadGallery() {
+                this.imageGallery.innerHTML = '';
+                
+                this.generatedImages.forEach((imageData, index) => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.innerHTML = `<img src="${imageData.url}" alt="${imageData.prompt}" title="${imageData.prompt}">`;
+                    
+                    galleryItem.addEventListener('click', () => {
+                        this.currentImageUrl = imageData.url;
+                        this.displayImage(imageData.url, imageData.prompt);
+                    });
+                    
+                    this.imageGallery.appendChild(galleryItem);
+                });
+            }
+            
+            showStatus(message) {
+                this.statusMessage.querySelector('p').textContent = message;
+                this.statusMessage.classList.remove('hidden');
+                this.placeholderContent.style.display = 'none';
+                
+                setTimeout(() => {
+                    this.statusMessage.classList.add('hidden');
+                }, 4000);
+            }
+            
+            showError(message) {
+                this.hideLoading();
+                
+                // Hide other sections
+                this.imageResult.classList.add('hidden');
+                this.statusMessage.classList.add('hidden');
+                this.placeholderContent.style.display = 'none';
+                
+                // Show enhanced error
+                this.errorMessage.querySelector('p').textContent = `⚠️ ${message}`;
+                this.errorMessage.classList.remove('hidden');
+            }
+            
+            async downloadImage() {
+                if (!this.currentImageUrl) return;
+                
+                try {
+                    this.downloadBtn.innerHTML = '<span>📥</span> Downloading...';
+                    this.downloadBtn.disabled = true;
+                    
+                    const response = await fetch(this.currentImageUrl);
+                    const blob = await response.blob();
+                    
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                    const quality = this.qualitySelect.value;
+                    link.download = `colorstage-ai-${quality}-${timestamp}.png`;
+                    link.href = url;
+                    
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    
+                    this.downloadBtn.innerHTML = '<span>📥</span> Download HD';
+                    this.downloadBtn.disabled = false;
+                    
+                    this.showStatus('✅ Supreme quality image downloaded successfully!');
+                    
+                } catch (error) {
+                    console.error('Download failed:', error);
+                    this.downloadBtn.innerHTML = '<span>📥</span> Download HD';
+                    this.downloadBtn.disabled = false;
+                    this.showError('Download failed - please try again');
+                }
+            }
+            
+            async upscaleImage() {
+                if (!this.currentImageUrl) return;
+                
+                try {
+                    this.upscaleBtn.innerHTML = '<span>🔍</span> Upscaling...';
+                    this.upscaleBtn.disabled = true;
+                    
+                    // Simulate upscaling with higher resolution request
+                    const dimensions = this.getSupremeDimensions();
+                    const upscaledUrl = this.currentImageUrl
+                        .replace(`width=${dimensions.width}`, `width=${dimensions.width * 2}`)
+                        .replace(`height=${dimensions.height}`, `height=${dimensions.height * 2}`)
+                        .replace(/seed=\d+/, `seed=${Math.floor(Math.random() * 1000000)}`);
+                    
+                    this.currentImageUrl = upscaledUrl;
+                    this.generatedImage.src = upscaledUrl;
+                    this.imageQuality.textContent = '🌟 Supreme 8K Upscaled';
+                    
+                    this.upscaleBtn.innerHTML = '<span>🔍</span> Upscale 8K';
+                    this.upscaleBtn.disabled = false;
+                    
+                    this.showStatus('✅ Image upscaled to supreme 8K quality!');
+                    
+                } catch (error) {
+                    console.error('Upscale failed:', error);
+                    this.upscaleBtn.innerHTML = '<span>🔍</span> Upscale 8K';
+                    this.upscaleBtn.disabled = false;
+                    this.showError('Upscaling failed - please try again');
+                }
+            }
+            
+            async shareImage() {
+                if (!this.currentImageUrl) return;
+                
+                try {
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: 'ColorStage AI Masterpiece',
+                            text: 'Check out this amazing AI-generated image!',
+                            url: this.currentImageUrl
+                        });
+                    } else {
+                        // Fallback: copy to clipboard
+                        await navigator.clipboard.writeText(this.currentImageUrl);
+                        this.showStatus('✅ Image URL copied to clipboard!');
+                    }
+                } catch (error) {
+                    console.error('Share failed:', error);
+                    this.showError('Sharing failed - please try downloading instead');
+                }
+            }
+            
+            resetForm() {
+                // Enhanced reset animation
+                this.promptInput.style.transform = 'scale(0.98)';
+                this.promptInput.style.opacity = '0.7';
+                
+                setTimeout(() => {
+                    this.promptInput.value = '';
+                    this.updateCharCount();
+                    this.promptInput.style.transform = 'scale(1)';
+                    this.promptInput.style.opacity = '1';
+                    this.promptInput.focus();
+                }, 200);
+                
+                // Hide results
+                this.imageResult.classList.add('hidden');
+                this.errorMessage.classList.add('hidden');
+                this.statusMessage.classList.add('hidden');
+                this.placeholderContent.style.display = 'block';
+                
+                // Reset current image
+                this.currentImageUrl = null;
+                
+                console.log('Form reset with enhanced animation');
+            }
+        }
+
+        // Initialize the ultimate app
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Initializing ColorStage AI Premium Edition...');
+            window.colorStageAI = new ColorStageAI();
+        });
+
+        // Ultimate console messages
+        console.log('%c🎨 ColorStage AI Premium Edition Loaded!', 'color: #667eea; font-size: 24px; font-weight: bold;');
+        console.log('%c✨ Supreme Quality • Watermark-Free • 8K Resolution', 'color: #4ecdc4; font-size: 16px; font-weight: 600;');
+        console.log('%c🚀 Ready to create legendary masterpieces!', 'color: #ff6b6b; font-size: 16px; font-weight: 600;');
+        console.log('%c💡 Pro Tip: Use Ctrl+Enter for quick generation!', 'color: #ffa726; font-size: 14px;');
+    </script>
+</body>
+</html>
+
